@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mercury-spec-ops": {
+      "command": "node",
+      "args": ["C:\\Development\\Projects\\MCP-Servers\\mercury-spec-ops\\dist\\src\\server.js"]
+    }
+  }
+}
