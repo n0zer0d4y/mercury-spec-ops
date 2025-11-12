@@ -1,0 +1,49 @@
+{
+  "name": "mercury-spec-ops",
+  "version": "0.1.0",
+  "description": "A modular TypeScript Model Context Protocol (MCP) server for specialized software development analysis and prompt engineering with programmatic prompt assembly",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "npx tsx src/server.ts",
+    "mcp": "npx tsx src/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:mcp": "node test-mcp.js",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts,.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "typescript",
+    "prompt-engineering",
+    "software-development",
+    "claude",
+    "ai",
+    "modular",
+    "prompts",
+    "templates",
+    "mercury",
+    "spec-ops",
+    "analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.21.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "@vitest/coverage-v8": "^4.0.8",
+    "@vitest/ui": "^4.0.8",
+    "tsx": "^4.20.3",
+    "typescript": "^5",
+    "vitest": "^4.0.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
