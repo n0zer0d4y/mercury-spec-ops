@@ -3,375 +3,361 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-  Tool,
-} from '@modelcontextprotocol/sdk/types.js';
-import {
-  Prompt,
-  PromptArgument,
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
-  PromptMessage,
-} from '@modelcontextprotocol/sdk/types.js';
-import {
-  Resource,
-  ListResourcesRequestSchema,
-  ReadResourceRequestSchema,
-  ResourceContents,
 } from '@modelcontextprotocol/sdk/types.js';
 
 // Import our modular components
-import { ModularPromptBuilder } from './prompts/prompt-builder';
-import { ModularTemplateBuilder } from './resources/template-builder';
+import { ModularPromptBuilder } from './prompts/prompt-builder.js';
+import { ModularTemplateBuilder } from './resources/template-builder.js';
 import { 
   TechnologyStack, 
   AnalysisFocus, 
-  BugSeverity, 
-  TargetAudience, 
-  ProjectType,
-  BugType,
-  EnhancedPromptArguments 
-} from './types';
+  BugSeverity
+} from './types/enums.js';
 
-// Create MCP server instance
+// Schema constants for tool input validation
+const TECHNOLOGY_STACK_ENUM = [
+  'node.js', 'javascript', 'typescript', 'python', 'java', 'c#',
+  'go', 'rust', 'php', 'ruby', 'swift', 'kotlin',
+  'react', 'angular', 'vue', 'express', 'nestjs',
+  'django', 'flask', 'spring', 'laravel', 'rails',
+  'mongodb', 'postgresql', 'mysql', 'redis',
+  'docker', 'kubernetes', 'aws', 'azure', 'gcp'
+];
+
+const ANALYSIS_FOCUS_ENUM = [
+  'architecture', 'security', 'performance', 'testing',
+  'documentation', 'maintainability', 'scalability', 'reliability',
+  'code-quality', 'dependencies'
+];
+
+const BUG_SEVERITY_ENUM = ['low', 'medium', 'high', 'critical'];
+
+// Create MCP server instance with tools capability only
 const server = new Server(
   {
     name: 'mercury-spec-ops',
-    version: '0.1.0',
+    version: '1.0.0',
   },
   {
     capabilities: {
-      prompts: {},
-      resources: {},
+      tools: {},
     },
   }
 );
 
-// Initialize our modular builders
-const promptBuilder = new ModularPromptBuilder();
-const templateBuilder = new ModularTemplateBuilder();
-
-// Define the enhanced prompts with enum support
-const prompts: Prompt[] = [
-  {
-    name: 'prd-prompt',
-    description: 'Generate a Product Requirements Document (PRD) for a software project with modular, technology-specific analysis',
-    arguments: [
-      {
-        name: 'project_name',
-        description: 'Name of the software project',
-        required: true,
-      },
-      {
-        name: 'project_description',
-        description: 'Brief description of the project',
-        required: true,
-      },
-      {
-        name: 'target_audience',
-        description: `Target audience for the product. Options: ${Object.values(TargetAudience).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'project_type',
-        description: `Type of project. Options: ${Object.values(ProjectType).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'key_features',
-        description: 'Key features to include in the PRD',
-        required: false,
-      },
-      {
-        name: 'technology_stack',
-        description: `Technology stack to be used. Options: ${Object.values(TechnologyStack).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'custom_instructions',
-        description: 'Custom instructions for PRD generation',
-        required: false,
-      },
-    ],
-  },
-  {
-    name: 'codebase-analysis-prompt',
-    description: 'Analyze a codebase/repository with modular, technology-specific and focus-area-specific analysis',
-    arguments: [
-      {
-        name: 'repository_path',
-        description: 'Path to the repository to analyze',
-        required: true,
-      },
-      {
-        name: 'technology_stack',
-        description: `Technology stack used in the codebase (required). Options: ${Object.values(TechnologyStack).join(', ')}`,
-        required: true,
-      },
-      {
-        name: 'analysis_focus',
-        description: `Focus areas for analysis. Options: ${Object.values(AnalysisFocus).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'custom_instructions',
-        description: 'Custom instructions for codebase analysis',
-        required: false,
-      },
-    ],
-  },
-  {
-    name: 'bug-analysis-prompt',
-    description: 'Analyze bugs and issues with modular, technology-specific and severity-specific analysis',
-    arguments: [
-      {
-        name: 'repository_path',
-        description: 'Path to the repository with bugs to analyze',
-        required: true,
-      },
-      {
-        name: 'bug_description',
-        description: 'Description of the bug or issue to analyze',
-        required: true,
-      },
-      {
-        name: 'affected_components',
-        description: 'Components affected by the bug',
-        required: false,
-      },
-      {
-        name: 'severity_level',
-        description: `Severity level of the bug. Options: ${Object.values(BugSeverity).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'bug_type',
-        description: `Type of bug. Options: ${Object.values(BugType).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'technology_stack',
-        description: `Technology stack used in the affected components. Options: ${Object.values(TechnologyStack).join(', ')}`,
-        required: false,
-      },
-      {
-        name: 'custom_instructions',
-        description: 'Custom instructions for bug analysis',
-        required: false,
-      },
-    ],
-  },
-];
-
-// Define the modular resources
-const resources: Resource[] = [
-  {
-    uri: 'resource://prd-template',
-    name: 'Modular PRD Template',
-    description: 'Modular markdown template for Product Requirements Document with technology-specific sections',
-    mimeType: 'text/markdown',
-  },
-  {
-    uri: 'resource://codebase-analysis-template',
-    name: 'Modular Codebase Analysis Template',
-    description: 'Modular markdown template for codebase analysis reports with technology and focus-specific sections',
-    mimeType: 'text/markdown',
-  },
-  {
-    uri: 'resource://bug-analysis-template',
-    name: 'Modular Bug Analysis Template',
-    description: 'Modular markdown template for bug analysis reports with severity and technology-specific sections',
-    mimeType: 'text/markdown',
-  },
-];
-
-// Helper function to parse enum values from strings
+// Helper function to parse enum values from strings (case-insensitive)
 function parseEnumValue<T>(enumObj: any, value: string): T | undefined {
   const enumValues = Object.values(enumObj);
   const foundValue = enumValues.find(v => 
     typeof v === 'string' && v.toLowerCase() === value.toLowerCase()
   );
+  
+  if (!foundValue) {
+    console.error(`Invalid enum value: ${value}. Valid values: ${enumValues.join(', ')}`);
+  }
+  
   return foundValue as T;
 }
 
-function parseEnumArray<T>(enumObj: any, value: string): T[] {
+// Enhanced function to parse enum arrays - handles both string and string[] inputs
+function parseEnumArray<T>(
+  enumObj: any, 
+  value: string | string[] | undefined
+): T[] {
   if (!value) return [];
   
-  const values = value.split(',').map(v => v.trim());
-  const result: T[] = [];
+  const values = Array.isArray(value) 
+    ? value 
+    : value.split(',').map(v => v.trim());
   
-  values.forEach(v => {
-    const enumValue = parseEnumValue<T>(enumObj, v);
-    if (enumValue) {
-      result.push(enumValue);
-    }
-  });
-  
-  return result;
+  return values
+    .map(v => parseEnumValue<T>(enumObj, v))
+    .filter((v): v is T => v !== undefined);
 }
 
-// List prompts handler
-server.setRequestHandler(ListPromptsRequestSchema, async () => {
-  return { prompts };
+// List tools handler - returns 6 available tools
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: 'generate_prd_prompt',
+        description: 'Generate an assembled Product Requirements Document prompt with specified technology stacks and analysis focus areas',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            technology_stack: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: TECHNOLOGY_STACK_ENUM
+              },
+              description: 'Technology stacks to include in prompt assembly',
+              uniqueItems: true
+            },
+            analysis_focus: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: ANALYSIS_FOCUS_ENUM
+              },
+              description: 'Analysis focus areas for the PRD',
+              uniqueItems: true
+            },
+            project_context: {
+              type: 'string',
+              description: 'Optional project context or background information'
+            }
+          },
+          required: ['technology_stack']
+        }
+      },
+      {
+        name: 'generate_codebase_analysis_prompt',
+        description: 'Generate an assembled codebase analysis prompt with specified technology stacks and analysis focus areas',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            technology_stack: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: TECHNOLOGY_STACK_ENUM
+              },
+              description: 'Technology stacks to analyze',
+              uniqueItems: true
+            },
+            analysis_focus: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: ANALYSIS_FOCUS_ENUM
+              },
+              description: 'Areas to focus analysis on',
+              uniqueItems: true
+            }
+          },
+          required: ['technology_stack', 'analysis_focus']
+        }
+      },
+      {
+        name: 'generate_bug_analysis_prompt',
+        description: 'Generate an assembled bug analysis prompt with specified technology stacks and severity level',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            technology_stack: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum: TECHNOLOGY_STACK_ENUM
+              },
+              description: 'Technology stacks involved in the bug',
+              uniqueItems: true
+            },
+            severity: {
+              type: 'string',
+              enum: BUG_SEVERITY_ENUM,
+              description: 'Bug severity level'
+            },
+            bug_context: {
+              type: 'string',
+              description: 'Optional bug description or context'
+            }
+          },
+          required: ['technology_stack', 'severity']
+        }
+      },
+      {
+        name: 'get_prd_template',
+        description: 'Fetch a comprehensive Product Requirements Document markdown template with all standard sections (14 sections total)',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        }
+      },
+      {
+        name: 'get_codebase_analysis_template',
+        description: 'Fetch a comprehensive codebase analysis markdown template with all standard sections (12 sections total)',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        }
+      },
+      {
+        name: 'get_bug_analysis_template',
+        description: 'Fetch a comprehensive bug analysis markdown template with all standard sections (8 sections total)',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+          required: []
+        }
+      }
+    ]
+  };
 });
 
-// Get prompt handler with modular assembly
-server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+// Call tool handler - dispatches to appropriate builder
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  if (name === 'prd-prompt') {
-    // Parse and enhance arguments with enum support
-    const enhancedArgs: EnhancedPromptArguments = {
-      project_name: args?.project_name,
-      project_description: args?.project_description,
-      target_audience: args?.target_audience ? 
-        parseEnumValue<TargetAudience>(TargetAudience, args.target_audience) || 
-        parseEnumArray(TargetAudience, args.target_audience) : 
-        undefined,
-      project_type: args?.project_type ? 
-        parseEnumValue<ProjectType>(ProjectType, args.project_type) : 
-        undefined,
-      key_features: args?.key_features,
-      technology_stack: args?.technology_stack ? 
-        parseEnumArray<TechnologyStack>(TechnologyStack, args.technology_stack) : 
-        undefined,
-      custom_instructions: args?.custom_instructions,
-    };
+  try {
+    switch (name) {
+      case 'generate_prd_prompt': {
+        const techStacks = parseEnumArray<TechnologyStack>(
+          TechnologyStack,
+          (args as any)?.technology_stack as string | string[] | undefined
+        );
+        const analysisFocus = parseEnumArray<AnalysisFocus>(
+          AnalysisFocus,
+          ((args as any)?.analysis_focus || []) as string | string[] | undefined
+        );
+        
+        const builder = new ModularPromptBuilder();
+        
+        const prompt = builder.buildPRDPrompt({
+          technology_stack: techStacks,
+          analysis_focus: analysisFocus.length > 0 ? analysisFocus : undefined,
+          custom_instructions: (args as any)?.project_context as string | undefined
+        });
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: prompt
+            }
+          ]
+        };
+      }
 
-    // Build the modular prompt
-    const promptContent = promptBuilder.buildPRDPrompt(enhancedArgs);
+      case 'generate_codebase_analysis_prompt': {
+        const techStacks = parseEnumArray<TechnologyStack>(
+          TechnologyStack,
+          (args as any)?.technology_stack as string | string[] | undefined
+        );
+        const analysisFocus = parseEnumArray<AnalysisFocus>(
+          AnalysisFocus,
+          (args as any)?.analysis_focus as string | string[] | undefined
+        );
+        
+        const builder = new ModularPromptBuilder();
+        
+        const prompt = builder.buildCodebaseAnalysisPrompt({
+          technology_stack: techStacks,
+          analysis_focus: analysisFocus
+        });
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: prompt
+            }
+          ]
+        };
+      }
 
-    const messages: PromptMessage[] = [
-      {
-        role: 'user',
-        content: {
-          type: 'text',
-          text: promptContent,
-        },
-      },
-    ];
-    return { messages };
-  }
+      case 'generate_bug_analysis_prompt': {
+        const techStacks = parseEnumArray<TechnologyStack>(
+          TechnologyStack,
+          (args as any)?.technology_stack as string | string[] | undefined
+        );
+        const severity = parseEnumValue<BugSeverity>(
+          BugSeverity,
+          ((args as any)?.severity || '') as string
+        );
+        
+        if (!severity) {
+          throw new Error(`Invalid severity value: ${(args as any)?.severity}`);
+        }
+        
+        const builder = new ModularPromptBuilder();
+        
+        const prompt = builder.buildBugAnalysisPrompt({
+          technology_stack: techStacks,
+          severity_level: severity,
+          custom_instructions: (args as any)?.bug_context as string | undefined
+        });
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: prompt
+            }
+          ]
+        };
+      }
 
-  if (name === 'codebase-analysis-prompt') {
-    // Parse and enhance arguments with enum support
-    const enhancedArgs: EnhancedPromptArguments = {
-      repository_path: args?.repository_path,
-      technology_stack: args?.technology_stack ? 
-        parseEnumArray<TechnologyStack>(TechnologyStack, args.technology_stack) : 
-        undefined,
-      analysis_focus: args?.analysis_focus ? 
-        parseEnumArray<AnalysisFocus>(AnalysisFocus, args.analysis_focus) : 
-        undefined,
-      custom_instructions: args?.custom_instructions,
-    };
+      case 'get_prd_template': {
+        const builder = new ModularTemplateBuilder();
+        
+        const template = builder.buildPRDTemplate();
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: template
+            }
+          ]
+        };
+      }
 
-    // Build the modular prompt
-    const promptContent = promptBuilder.buildCodebaseAnalysisPrompt(enhancedArgs);
+      case 'get_codebase_analysis_template': {
+        const builder = new ModularTemplateBuilder();
+        
+        const template = builder.buildCodebaseAnalysisTemplate();
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: template
+            }
+          ]
+        };
+      }
 
-    const messages: PromptMessage[] = [
-      {
-        role: 'user',
-        content: {
-          type: 'text',
-          text: promptContent,
-        },
-      },
-    ];
-    return { messages };
-  }
+      case 'get_bug_analysis_template': {
+        const builder = new ModularTemplateBuilder();
+        
+        const template = builder.buildBugAnalysisTemplate();
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: template
+            }
+          ]
+        };
+      }
 
-  if (name === 'bug-analysis-prompt') {
-    // Parse and enhance arguments with enum support
-    const enhancedArgs: EnhancedPromptArguments = {
-      repository_path: args?.repository_path,
-      bug_description: args?.bug_description,
-      affected_components: args?.affected_components,
-      severity_level: args?.severity_level ? 
-        parseEnumValue<BugSeverity>(BugSeverity, args.severity_level) : 
-        undefined,
-      bug_type: args?.bug_type ? 
-        parseEnumArray<BugType>(BugType, args.bug_type) : 
-        undefined,
-      technology_stack: args?.technology_stack ? 
-        parseEnumArray<TechnologyStack>(TechnologyStack, args.technology_stack) : 
-        undefined,
-      custom_instructions: args?.custom_instructions,
-    };
-
-    // Build the modular prompt
-    const promptContent = promptBuilder.buildBugAnalysisPrompt(enhancedArgs);
-
-    const messages: PromptMessage[] = [
-      {
-        role: 'user',
-        content: {
-          type: 'text',
-          text: promptContent,
-        },
-      },
-    ];
-    return { messages };
-  }
-
-  throw new Error(`Unknown prompt: ${name}`);
-});
-
-// List resources handler
-server.setRequestHandler(ListResourcesRequestSchema, async () => {
-  return { resources };
-});
-
-// Read resource handler with modular assembly
-server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-  const { uri } = request.params;
-
-  if (uri === 'resource://prd-template') {
-    const templateContent = templateBuilder.buildPRDTemplate();
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return {
-      contents: [
+      content: [
         {
-          uri,
-          mimeType: 'text/markdown',
-          text: templateContent,
-        },
+          type: 'text',
+          text: `Error: ${errorMessage}`
+        }
       ],
+      isError: true
     };
   }
-
-  if (uri === 'resource://codebase-analysis-template') {
-    const templateContent = templateBuilder.buildCodebaseAnalysisTemplate();
-    return {
-      contents: [
-        {
-          uri,
-          mimeType: 'text/markdown',
-          text: templateContent,
-        },
-      ],
-    };
-  }
-
-  if (uri === 'resource://bug-analysis-template') {
-    const templateContent = templateBuilder.buildBugAnalysisTemplate();
-    return {
-      contents: [
-        {
-          uri,
-          mimeType: 'text/markdown',
-          text: templateContent,
-        },
-      ],
-    };
-  }
-
-  throw new Error(`Resource not found: ${uri}`);
 });
 
 // Start the server
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('Mercury Spec Ops (Modular v0.1.0) started');
+  console.error('Mercury Spec Ops MCP Server v1.0.0 (Tools Architecture) started');
 }
 
 main().catch((error) => {
