@@ -9,7 +9,9 @@
   },
   "files": [
     "dist/src/server.js",
-    "dist/src/**/*.js",
+    "dist/src/prompts/**/*.js",
+    "dist/src/resources/**/*.js",
+    "dist/src/types/**/*.js",
     "README.md",
     "LICENSE"
   ],
@@ -21,7 +23,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:mcp": "node test-mcp.js",
-    "build": "tsc && chmod +x dist/src/server.js",
+    "build": "tsc",
     "prepare": "npm run build",
     "prepublishOnly": "npm test",
     "lint": "eslint . --ext .ts,.js"

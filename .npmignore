@@ -5,8 +5,10 @@ src/
 
 # Tests
 __tests__/
+**/__tests__/
 test-mcp.js
 vitest.config.ts
+vitest.config.js
 
 # Development files
 .github/
