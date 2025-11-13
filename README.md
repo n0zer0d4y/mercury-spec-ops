@@ -293,12 +293,12 @@ src/
 │   └── prompt-builder.ts        # Programmatic prompt assembly
 ├── resources/
 │   ├── templates/               # Modular template components
-│   │   ├── prd/                 # PRD template modules
-│   │   ├── codebase-analysis/   # Codebase analysis modules
-│   │   └── bug-analysis/        # Bug analysis modules
+│   │   ├── prd/                 # 10 PRD template modules
+│   │   ├── codebase-analysis/   # 8 codebase analysis modules
+│   │   └── bug-analysis/        # 4 bug analysis modules
 │   └── template-builder.ts      # Programmatic template assembly
 └── __tests__/                   # Comprehensive test suite (66 tests)
-    ├── utils/                   # Utility function tests
+    ├── utils/                   # Utility function tests (enum parser)
     ├── prompts/                 # Prompt builder tests
     ├── resources/               # Template builder tests
     └── types/                   # Enum and type tests
@@ -382,16 +382,16 @@ npm run lint
 
 ## Contributing
 
-This project follows industry best practices:
+Contributions are welcome! Please follow these guidelines:
 
-- TypeScript strict mode
-- Comprehensive testing (88% coverage)
-- Clean code principles
-- Modular architecture
-- Extensive documentation
+- Fork the repository and create a feature branch
+- Follow existing code patterns and maintain test coverage above 85%
+- Use [Conventional Commits](https://www.conventionalcommits.org/) format (feat, fix, docs, test, chore)
+- Ensure all tests pass before submitting a pull request
+- See [Extending the System](#extending-the-system) for adding new modules
 
-See individual module files for implementation examples.
+Report issues on [GitHub Issues](https://github.com/n0zer0d4y/mercury-spec-ops/issues) with clear reproduction steps.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
