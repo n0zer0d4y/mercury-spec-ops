@@ -52,6 +52,9 @@
   "bugs": {
     "url": "https://github.com/n0zer0d4y/mercury-spec-ops/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.21.1"
   },
