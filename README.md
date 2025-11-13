@@ -1,6 +1,15 @@
-# Mercury Spec Ops - Modular MCP Server
+# Mercury Spec Ops - MCP Server: Prompts and Resources as **_Tools_**
 
-A sophisticated TypeScript Model Context Protocol (MCP) server for specialized software development analysis and prompt engineering with programmatic prompt assembly.
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![MCP Dev](https://badge.mcpx.dev?type=dev "MCP Dev")
+[![MCP Server](https://badge.mcpx.dev?type=server "MCP Server")](https://modelcontextprotocol.io)
+[![MCP Server with Tools](https://badge.mcpx.dev?type=server&features=tools "MCP server with tools")](https://modelcontextprotocol.io)
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**The first MCP server to expose dynamic, AI-invocable tools for prompt generation and template assembly.**
+
+Transform how AI assistants interact with specialized content. Instead of static prompts and resources, Mercury Spec Ops provides **6 programmable tools** that enable AI to dynamically generate technology-specific prompts and comprehensive templates on-demand. Built on a sophisticated modular architecture with **31 technology stacks**, **10 analysis dimensions**, and **34 template sections**—all accessible through simple tool calls.
 
 ## Features
 
@@ -53,25 +62,72 @@ This MCP server provides a modular, extensible architecture with:
 
 ## Installation
 
-1. Install dependencies:
+### Option 1: Local Development
+
+1. Clone and install dependencies:
 
 ```bash
+git clone https://github.com/n0zer0d4y/mercury-spec-ops.git
+cd mercury-spec-ops
 npm install
+npm run build
 ```
 
-2. The MCP SDK is already included in the dependencies.
-
-## Usage
-
-### Running the MCP Server
+2. Run the server locally:
 
 ```bash
 npm run mcp
 ```
 
-### Integration with Claude Desktop
+### Option 2: Install from npm
 
-To use this MCP server with Claude Desktop, you need to configure it in your Claude Desktop settings. Add the following configuration:
+```bash
+npm install -g @n0zer0d4y/mercury-spec-ops
+```
+
+Or use directly with `npx` (no installation required):
+
+```bash
+npx @n0zer0d4y/mercury-spec-ops
+```
+
+## Usage
+
+### Integration with MCP Clients
+
+Configure the server in your MCP client (Claude Desktop, Cursor, etc.):
+
+#### Using npx (Recommended - No Installation)
+
+**For Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "mercury-spec-ops": {
+      "command": "npx",
+      "args": ["-y", "@n0zer0d4y/mercury-spec-ops"]
+    }
+  }
+}
+```
+
+**For Cursor** (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "mercury-spec-ops": {
+      "timeout": 60,
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@n0zer0d4y/mercury-spec-ops"]
+    }
+  }
+}
+```
+
+#### Using Local Installation
 
 **For Claude Desktop** (`claude_desktop_config.json`):
 
@@ -101,7 +157,7 @@ To use this MCP server with Claude Desktop, you need to configure it in your Cla
 }
 ```
 
-**Windows Example** (Cursor):
+**Windows Local Path Example** (Cursor):
 
 ```json
 {
@@ -120,9 +176,9 @@ To use this MCP server with Claude Desktop, you need to configure it in your Cla
 
 **Important Notes:**
 
-- Replace the path with your actual project location
-- Run `npm run build` first to generate the `dist` folder
-- Restart your MCP client after configuration changes
+- **npx**: Automatically fetches the latest version from npm (recommended for most users)
+- **Local**: Replace the path with your actual project location and run `npm run build` first
+- **Restart**: Restart your MCP client after configuration changes
 
 ## Workflow Examples
 
