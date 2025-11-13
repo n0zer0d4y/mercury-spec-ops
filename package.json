@@ -2,7 +2,6 @@
   "name": "mercury-spec-ops",
   "version": "0.1.0",
   "description": "A modular TypeScript Model Context Protocol (MCP) server for specialized software development analysis and prompt engineering with programmatic prompt assembly",
-  "type": "module",
   "main": "dist/src/server.js",
   "bin": {
     "mercury-spec-ops": "dist/src/server.js"
