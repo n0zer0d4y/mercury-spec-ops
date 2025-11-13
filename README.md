@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/n0zer0d4y-mercury-spec-ops-badge.png)](https://mseep.ai/app/n0zer0d4y-mercury-spec-ops)
+
 # Mercury Spec Ops - MCP Server: Prompts and Resources as **_Tools_**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
