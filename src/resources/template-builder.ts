@@ -74,12 +74,12 @@ export class ModularTemplateBuilder implements TemplateBuilder {
 
     // Register codebase analysis template modules (12 sections)
     const codebaseModules = [
-      codebaseAnalysisOverviewSection,
+      codebaseAnalysisOverviewSection, 
       codebaseAnalysisStatisticsSection,
-      codebaseAnalysisArchitectureSection,
+      codebaseAnalysisArchitectureSection, 
       codebaseAnalysisCodeQualitySection,
       codebaseAnalysisSecuritySection, 
-      codebaseAnalysisPerformanceSection,
+      codebaseAnalysisPerformanceSection, 
       codebaseAnalysisMaintainabilitySection,
       codebaseAnalysisScalabilitySection,
       codebaseAnalysisReliabilitySection,
@@ -93,7 +93,7 @@ export class ModularTemplateBuilder implements TemplateBuilder {
     const bugModules = [
       bugAnalysisOverviewSection, 
       bugAnalysisReproductionSection, 
-      bugAnalysisRootCauseSection,
+      bugAnalysisRootCauseSection, 
       bugAnalysisTimelineSection,
       bugAnalysisImpactSection, 
       bugAnalysisResolutionSection,
