@@ -7,6 +7,7 @@
 [![MCP Server with Tools](https://badge.mcpx.dev?type=server&features=tools "MCP server with tools")](https://modelcontextprotocol.io)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/n0zer0d4y-mercury-spec-ops-badge.png)](https://mseep.ai/app/n0zer0d4y-mercury-spec-ops)
 
 **The first MCP server to expose dynamic, AI-invocable tools for prompt generation and template assembly.**
 
