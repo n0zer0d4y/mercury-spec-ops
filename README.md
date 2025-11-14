@@ -1,6 +1,7 @@
-# Mercury Spec Ops - MCP Server: Prompts and Resources as **_Tools_**
+# Mercury Spec Ops MCP Server: Prompts and Resources as **_Tools_**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+[![MCP Registry](https://img.shields.io/badge/MCP-Registry-blue)](https://registry.modelcontextprotocol.io/servers/io.github.n0zer0d4y/mercury-spec-ops)
 ![MCP Dev](https://badge.mcpx.dev?type=dev "MCP Dev")
 [![MCP Server](https://badge.mcpx.dev?type=server "MCP Server")](https://modelcontextprotocol.io)
 [![MCP Server with Tools](https://badge.mcpx.dev?type=server&features=tools "MCP server with tools")](https://modelcontextprotocol.io)

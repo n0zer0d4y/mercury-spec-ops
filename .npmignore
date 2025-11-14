@@ -50,3 +50,7 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# MCP Registry Authentication
+.mcpregistry_github_token
+.mcpregistry_registry_token
